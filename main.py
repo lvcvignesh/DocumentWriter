@@ -5,7 +5,7 @@ from agents import converse_with_retry, WRITER_MODEL_ID, CRITIC_MODEL_ID
 from document_generation import write_document_section, critique_section, improve_section
 
 def main():
-    st.title("Cosworth Gameday Document Generator")
+    st.title("Document Generator")
 
     # Input for topic context
     topic_context = st.text_area("Enter the topic context:", height=200)
@@ -55,14 +55,14 @@ def main():
     max_iterations_per_section = st.number_input("Max iterations per section:", min_value=1, max_value=5, value=2)
 
     if st.button("Generate Document"):
-        output_text = "# Cosworth Gameday Doc\n\n"
+        output_text = "# Document\n\n"
         output_text += "This document contains the following sections:\n\n"
         for section in sections:
             output_text += f"- {section['title']}\n"
         output_text += "\n\n"
 
         output_area = st.empty()
-        output_area.text_area("Generated Document:", value=output_text, height=400)
+        output_area.markdown(output_text)
 
         previous_sections = ""
         for section in sections:
@@ -80,12 +80,19 @@ def main():
                 section_content = improved_section
 
             output_text += f"## {section['title']}\n\n{section_content}\n\n"
-            output_area.text_area("Generated Document:", value=output_text, height=400)
+            output_area.markdown(output_text)
 
             # Update previous_sections for context in the next section
             previous_sections += f"{section['title']}:\n{section_content}\n\n"
 
         st.success("Document generation complete!")
+
+        # Add save button
+        if st.button("Save Document"):
+            save_path = "generated_document.md"
+            with open(save_path, "w") as f:
+                f.write(output_text)
+            st.success(f"Document saved as {save_path}")
 
 if __name__ == "__main__":
     main()
